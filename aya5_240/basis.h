@@ -48,7 +48,7 @@ public:
 	CBasis(void);
 	~CBasis(void) {}
 	
-	void CBasis::CreateWordMatch(void);
+	void CreateWordMatch(void);
 
 	char	IsRun(void) { return run; }
 

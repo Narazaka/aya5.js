@@ -29,7 +29,7 @@ using namespace std;
 #include "lib.h"
 #include "wordmatch.h"
 
-extern vector<CFunction>	function;
+extern vector<CFunction>	cfunction;
 extern CCallDepth			calldepth;
 extern CGlobalVariable		variable;
 extern CFile				files;
@@ -700,7 +700,7 @@ void	CBasis::ExecuteLoad(void)
 	CLocalVariable	lvar;
 	int	exitcode;
 	logger.Io(0, path);
-	function[loadindex].Execute(arg, lvar, exitcode);
+	cfunction[loadindex].Execute(arg, lvar, exitcode);
 	wstring empty;
 	logger.Io(1, empty);
 }
@@ -738,7 +738,7 @@ HGLOBAL	CBasis::ExecuteRequest(HGLOBAL h, long *len)
 	calldepth.Init();
 	CLocalVariable	lvar;
 	int	exitcode;
-	CValue	result = function[requestindex].Execute(arg, lvar, exitcode);
+	CValue	result = cfunction[requestindex].Execute(arg, lvar, exitcode);
 	// 結果を文字列として取得し、文字コードをMBCSに変換
 	wstring	res = result.GetValueString();
 	logger.Io(1, res);
@@ -783,7 +783,7 @@ char* CBasis::ExecuteRequest(char* h, long* len) {
     calldepth.Init();
     CLocalVariable	lvar;
     int	exitcode;
-    CValue	result = function[requestindex].Execute(arg, lvar, exitcode);
+    CValue	result = cfunction[requestindex].Execute(arg, lvar, exitcode);
     // 結果を文字列として取得し、文字コードをMBCSに変換
     wstring	res = result.GetValueString();
     logger.Io(1, res);
@@ -819,6 +819,6 @@ void	CBasis::ExecuteUnload(void)
 	int	exitcode;
 	wstring empty;
 	logger.Io(0, empty);
-	function[unloadindex].Execute(arg, lvar, exitcode);
+	cfunction[unloadindex].Execute(arg, lvar, exitcode);
 	logger.Io(1, empty);
 }

@@ -18,10 +18,10 @@
 #  include <unistd.h>
 #  include <stdio.h>
 #  include <dirent.h>
-#  include <boost/scoped_array.hpp>
+#  include <memory>
 using namespace std;
-using namespace boost;
 #endif
+#include <cmath>
 #include "basis.h"
 #include "parser0.h"
 #include "function.h"
@@ -36,7 +36,7 @@ using namespace boost;
 #include "mt19937ar.h"
 
 extern CBasis				basis;
-extern vector<CFunction>	function;
+extern vector<CFunction>	cfunction;
 extern CSystemFunction		sysfunction;
 extern CGlobalVariable		variable;
 extern CFile				files;
@@ -1443,7 +1443,7 @@ CValue CSystemFunction::FCOPY(vector<CValueSub> &arg, wstring &d, int &l) {
     if (is.good()) {
 	ofstream os(dest.c_str());
 	if (os.good()) {
-	    scoped_array<char> buf(new char[512]);
+	    unique_ptr<char[]> buf(new char[512]);
 	    while (is.good()) {
 		is.read(buf.get(), 512);
 		int len = is.gcount();
@@ -2172,19 +2172,16 @@ CValue	CSystemFunction::GETTIME(void)
 	time_t	ltime;
 	time(&ltime);
 	tm	*today = localtime(&ltime);
-	wchar_t	t_timestr[16];
-	wcsftime(t_timestr, STRMAX, L"%Y%m%d%w%H%M%S", today);
-	wstring	timestr = t_timestr;
 
 	CValue	result(F_TAG_ARRAY, 0/*dmy*/);
 
-	result.array.push_back(CValueSub(ws_atoi(timestr.substr( 0, 4), 10)));
-	result.array.push_back(CValueSub(ws_atoi(timestr.substr( 4, 2), 10)));
-	result.array.push_back(CValueSub(ws_atoi(timestr.substr( 6, 2), 10)));
-	result.array.push_back(CValueSub(ws_atoi(timestr.substr( 8, 1), 10)));
-	result.array.push_back(CValueSub(ws_atoi(timestr.substr( 9, 2), 10)));
-	result.array.push_back(CValueSub(ws_atoi(timestr.substr(11, 2), 10)));
-	result.array.push_back(CValueSub(ws_atoi(timestr.substr(13, 2), 10)));
+	result.array.push_back(CValueSub(static_cast<int>(today->tm_year) + 1900));
+	result.array.push_back(CValueSub(static_cast<int>(today->tm_mon) + 1));
+	result.array.push_back(CValueSub(static_cast<int>(today->tm_mday)));
+	result.array.push_back(CValueSub(static_cast<int>(today->tm_wday)));
+	result.array.push_back(CValueSub(static_cast<int>(today->tm_hour)));
+	result.array.push_back(CValueSub(static_cast<int>(today->tm_min)));
+	result.array.push_back(CValueSub(static_cast<int>(today->tm_sec)));
 
 	return result;
 }
@@ -2284,13 +2281,13 @@ CValue	CSystemFunction::RE_SEARCH(vector<CValueSub> &arg, wstring &d, int &l)
 	::wcscpy(str, arg[0].s_value.c_str());
 	int	t_result;
 	try {
-		boost::reg_expression<wchar_t> regex(arg[1].s_value.c_str());
-		boost::match_results<const wchar_t*>	result;
-		t_result = (int)boost::regex_search(str, result, regex);
+		std::basic_regex<wchar_t> regex(arg[1].s_value.c_str());
+		std::match_results<const wchar_t*>	result;
+		t_result = (int)std::regex_search(str, result, regex);
 		if (t_result)
 			StoreReResultDetails(result);
 	}
-	catch(const boost::bad_expression &e) {
+	catch(const std::regex_error &e) {
 		t_result = 0;
 		logger.Error(E_W, 16, L"RE_SEARCH", d, l);
 		SetError(16);
@@ -2342,13 +2339,13 @@ CValue	CSystemFunction::RE_MATCH(vector<CValueSub> &arg, wstring &d, int &l)
 	::wcscpy(str, arg[0].s_value.c_str());
 	int	t_result;
 	try {
-		boost::reg_expression<wchar_t> regex(arg[1].s_value.c_str());
-		boost::match_results<const wchar_t*>	result;
-		t_result = (int)boost::regex_match(str, result, regex);
+		std::basic_regex<wchar_t> regex(arg[1].s_value.c_str());
+		std::match_results<const wchar_t*>	result;
+		t_result = (int)std::regex_match(str, result, regex);
 		if (t_result)
 			StoreReResultDetails(result);
 	}
-	catch(const boost::bad_expression &e) {
+	catch(const std::regex_error &e) {
 		t_result = 0;
 		logger.Error(E_W, 16, L"RE_MATCH", d, l);
 		SetError(16);
@@ -2405,17 +2402,17 @@ CValue	CSystemFunction::RE_GREP(vector<CValueSub> &arg, wstring &d, int &l)
 	int	t_result = 0;
 
 	try {
-		boost::reg_expression<wchar_t> regex(arg[1].s_value.c_str());
-		boost::match_results<const wchar_t*>	result;
+		std::basic_regex<wchar_t> regex(arg[1].s_value.c_str());
+		std::match_results<const wchar_t*>	result;
 		for( ; ; ) {
-			if (!boost::regex_search(search_point, result, regex))
+			if (!std::regex_search(search_point, result, regex))
 				break;
 			t_result++;
 			AppendReResultDetail(result.str(0), result.position(0) + t_pos, result.length(0));
 			search_point = str + (t_pos += (result.position(0) + result.length(0)));
 		}
 	}
-	catch(const boost::bad_expression &e) {
+	catch(const std::regex_error &e) {
 		t_result = 0;
 		logger.Error(E_W, 16, L"RE_GREP", d, l);
 		SetError(16);
@@ -2550,10 +2547,10 @@ CValue	CSystemFunction::RE_SPLIT_CORE(vector<CValueSub> &arg, wstring &d, int &l
 	CValue	splits(F_TAG_ARRAY, 0/*dmy*/);
 
 	try {
-		boost::reg_expression<wchar_t> regex(arg[1].s_value.c_str());
-		boost::match_results<const wchar_t*>	result;
+		std::basic_regex<wchar_t> regex(arg[1].s_value.c_str());
+		std::match_results<const wchar_t*>	result;
 		for( ; ; ) {
-			if (!boost::regex_search(search_point, result, regex))
+			if (!std::regex_search(search_point, result, regex))
 				break;
 
 			splits.array.push_back(arg[0].s_value.substr(t_pos, result.position(0)));
@@ -2564,7 +2561,7 @@ CValue	CSystemFunction::RE_SPLIT_CORE(vector<CValueSub> &arg, wstring &d, int &l
 //		if (len)
 			splits.array.push_back(arg[0].s_value.substr(t_pos, len));
 	}
-	catch(const boost::bad_expression &e) {
+	catch(const std::regex_error &e) {
 		splits = CValue(F_TAG_ARRAY, 0/*dmy*/);
 		logger.Error(E_W, 16, fncname, d, l);
 		SetError(16);
@@ -3282,11 +3279,11 @@ CValue CSystemFunction::FATTRIB(vector<CValueSub> &arg, wstring &d, int &l) {
 	// é¿çs
 	wstring	t_result;
 	try {
-		boost::reg_expression<wchar_t> regex(arg[1].s_value.c_str());
-		boost::match_results<const wchar_t*>	result;
-		t_result = boost::regex_replace(arg[0].s_value, regex, arg[2].s_value);
+		std::basic_regex<wchar_t> regex(arg[1].s_value.c_str());
+		std::match_results<const wchar_t*>	result;
+		t_result = std::regex_replace(arg[0].s_value, regex, arg[2].s_value);
 	}
-	catch(const boost::bad_expression &e) {
+	catch(const std::regex_error &e) {
 		t_result = L"";
 		logger.Error(E_W, 16, L"RE_REPLACEEX", d, l);
 		SetError(16);
@@ -3310,7 +3307,7 @@ CValue CSystemFunction::FATTRIB(vector<CValueSub> &arg, wstring &d, int &l) {
  *  ã@î\äTóvÅF  ê≥ãKï\åªånä÷êîÇÃèàóùåãâ è⁄ç◊Çí~êœÇµÇ‹Ç∑
  * -----------------------------------------------------------------------
  */
-void	CSystemFunction::StoreReResultDetails(boost::match_results<const wchar_t*> &result)
+void	CSystemFunction::StoreReResultDetails(std::match_results<const wchar_t*> &result)
 {
 	int	sz = result.size();
 	for(int i = 0; i < sz; i++)

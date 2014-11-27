@@ -9,7 +9,6 @@
 // http://kamoland.com/comp/unicode.html
 //
 
-#include "StdAfx.h"
 #include "ccct.h"
 
 /*

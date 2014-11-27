@@ -16,7 +16,7 @@
 #include "log.h"
 #include "wsex.h"
 
-extern vector<CFunction>	function;
+extern vector<CFunction>	cfunction;
 extern CGlobalVariable		variable;
 extern CLog					logger;
 
@@ -31,7 +31,7 @@ char	CParser1::CheckExecutionCode(void)
 {
 	int	errcount = 0;
 
-	for(vector<CFunction>::iterator it = function.begin(); it != function.end(); it++)
+	for(vector<CFunction>::iterator it = cfunction.begin(); it != cfunction.end(); it++)
 		for(vector<CStatement>::iterator it2 = it->statement.begin(); it2 != it->statement.end(); it2++)
 		      errcount += CheckExecutionCode1(*it2, it->dicfilename);
 
@@ -216,7 +216,7 @@ char	CParser1::SetBreakJumpNo(void)
 {
 	int	errcount = 0;
 
-	for(vector<CFunction>::iterator it = function.begin(); it != function.end(); it++) {
+	for(vector<CFunction>::iterator it = cfunction.begin(); it != cfunction.end(); it++) {
 		vector<CVecint>	dline;
 		CVecint	addvecint;
 		dline.push_back(addvecint);
@@ -267,7 +267,7 @@ char	CParser1::CheckCaseSyntax(void)
 {
 	int	errcount = 0;
 
-	for(vector<CFunction>::iterator it = function.begin(); it != function.end(); it++) {
+	for(vector<CFunction>::iterator it = cfunction.begin(); it != cfunction.end(); it++) {
 		int	casev = 0;
 		for(vector<CStatement>::iterator it2 = it->statement.begin(); it2 != it->statement.end(); it2++) {
 			if (it2->type == ST_FORMULA_SUBST) {
@@ -299,7 +299,7 @@ char	CParser1::CheckIfSyntax(void)
 {
 	int	errcount = 0;
 
-	for(vector<CFunction>::iterator it = function.begin(); it != function.end(); it++) {
+	for(vector<CFunction>::iterator it = cfunction.begin(); it != cfunction.end(); it++) {
 		int	beftype = ST_UNKNOWN;
 		for(vector<CStatement>::iterator it2 = it->statement.begin(); it2 != it->statement.end(); it2++) {
 			if (it2->type != ST_OPEN) {
@@ -346,7 +346,7 @@ char	CParser1::CheckElseSyntax(void)
 {
 	int	errcount = 0;
 
-	for(vector<CFunction>::iterator it = function.begin(); it != function.end(); it++) {
+	for(vector<CFunction>::iterator it = cfunction.begin(); it != cfunction.end(); it++) {
 		int	beftype = ST_UNKNOWN;
 		for(vector<CStatement>::iterator it2 = it->statement.begin(); it2 != it->statement.end(); it2++) {
 			if (it2->type == ST_ELSEIF ||
@@ -375,7 +375,7 @@ char	CParser1::CheckForSyntax(void)
 {
 	int	errcount = 0;
 
-	for(vector<CFunction>::iterator it = function.begin(); it != function.end(); it++) {
+	for(vector<CFunction>::iterator it = cfunction.begin(); it != cfunction.end(); it++) {
 		int	beftype[3] = { ST_UNKNOWN, ST_UNKNOWN, ST_UNKNOWN };
 		for(vector<CStatement>::iterator it2 = it->statement.begin(); it2 != it->statement.end(); it2++) {
 			if (beftype[2] == ST_FOR) {
@@ -414,7 +414,7 @@ char	CParser1::CheckForeachSyntax(void)
 {
 	int	errcount = 0;
 
-	for(vector<CFunction>::iterator it = function.begin(); it != function.end(); it++) {
+	for(vector<CFunction>::iterator it = cfunction.begin(); it != cfunction.end(); it++) {
 		int	beftype[2]  = { ST_UNKNOWN, ST_UNKNOWN };
 		int	befcelltype = F_TAG_UNKNOWN;
 		for(vector<CStatement>::iterator it2 = it->statement.begin(); it2 != it->statement.end(); it2++) {
@@ -453,7 +453,7 @@ char	CParser1::SetIfJumpNo(void)
 {
 	int	errcount = 0;
 
-	for(vector<CFunction>::iterator it = function.begin(); it != function.end(); it++) {
+	for(vector<CFunction>::iterator it = cfunction.begin(); it != cfunction.end(); it++) {
 		vector<int>	dline;
 		dline.push_back(-1);
 		vector<int>	ifchain;
@@ -593,10 +593,10 @@ char	CParser1::CheckFunctionArgument(CStatement& st, const wstring& dicfilename)
  */
 void	CParser1::CompleteSetting(void)
 {
-	for(vector<CFunction>::iterator it = function.begin(); it != function.end(); it++)
+	for(vector<CFunction>::iterator it = cfunction.begin(); it != cfunction.end(); it++)
 		it->CompleteSetting();
 
-	vector<CFunction>(function).swap(function);
+	vector<CFunction>(cfunction).swap(cfunction);
 
 	variable.CompleteSetting();
 }

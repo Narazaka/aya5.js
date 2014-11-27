@@ -28,6 +28,8 @@
 #  include "stdafx.h"
 #else
 #  include <string>
+#  include <cstdlib>
+#  include <clocale>
 using namespace std;
 #endif
 

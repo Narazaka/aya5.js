@@ -15,7 +15,7 @@
 #include "log.h"
 #include "wsex.h"
 
-extern vector<CFunction>	function;
+extern vector<CFunction>	cfunction;
 extern CGlobalVariable		variable;
 extern CLog					logger;
 
@@ -34,7 +34,7 @@ void	CLogExCode::OutExecutionCodeForCheck(void)
 
 	wchar_t	tmpstr[STRMAX];
 	int	i = 0;
-	for(vector<CFunction>::iterator it = function.begin(); it != function.end(); it++, i++) {
+	for(vector<CFunction>::iterator it = cfunction.begin(); it != cfunction.end(); it++, i++) {
 		// ä÷êîÇÃíËã`î‘çÜ
 	        swprintf(tmpstr, STRMAX, L"[%04d] ", i);
 		logger.Write(tmpstr);
@@ -308,7 +308,7 @@ void	CLogExCode::StructCellString(vector<CCell> *cellvector, wstring &formula)
 			break;
 		case F_TAG_USERFUNC:
 			formula += L"(func)";
-			formula += function[it->index].name;
+			formula += cfunction[it->index].name;
 			formula += L" ";
 			break;
 		case F_TAG_VARIABLE:

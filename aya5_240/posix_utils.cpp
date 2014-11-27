@@ -4,9 +4,7 @@
 #include "posix_utils.h"
 #include <iostream>
 #include <fstream>
-#include <boost/scoped_array.hpp>
 using namespace std;
-using namespace boost;
 
 string lc(const string& fname) {
     string result;
@@ -59,7 +57,7 @@ string::size_type file_content_search(const string& file, const string& str) {
     string content;
     
     ifstream is(file.c_str());
-    scoped_array<char> buf(new char[512]);
+    unique_ptr<char[]> buf(new char[512]);
     while (is.good()) {
 	is.read(buf.get(), 512);
 	int len = is.gcount();
@@ -75,7 +73,7 @@ string::size_type file_content_search(const string& file, const string& str) {
 
 string::size_type bm_search(const string& world, const string& data) {
     string::size_type data_len = data.length();
-    scoped_array<string::size_type> skip(new string::size_type[256]);
+    unique_ptr<string::size_type[]> skip(new string::size_type[256]);
     for (string::size_type i = 0; i < 256; i++) {
 	skip[i] = data_len;
     }

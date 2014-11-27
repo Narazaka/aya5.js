@@ -21,7 +21,7 @@
 #include "wordmatch.h"
 
 extern CBasis				basis;
-extern vector<CFunction>	function;
+extern vector<CFunction>	cfunction;
 extern CGlobalVariable		variable;
 extern CLog					logger;
 
@@ -647,22 +647,22 @@ char	IsLegalPlainStrLiteral(const wstring &str)
 
 /* -----------------------------------------------------------------------
  *  関数名  ：  GetFunctionIndexFromName
- *  機能概要：  関数名に対応するfunction配列の序数を取得します
+ *  機能概要：  関数名に対応するcfunction配列の序数を取得します
  * -----------------------------------------------------------------------
  */
 int	GetFunctionIndexFromName(const wstring& str)
 {
 	int i = function_wm.search(str, 0);
-	if((i != -1) && !function[i].name.compare(str)) {
+	if((i != -1) && !cfunction[i].name.compare(str)) {
 		// strの最初が関数名にマッチした場合にWordMatchは-1以外を返すので，
 		// 完全一致かどうか再度チェックが必要．
 		return i;
 	}
 	return -1;
 /*
-	int	sz = function.size();
+	int	sz = cfunction.size();
 	for(int i = 0; i < sz; i++)
-		if (!function[i].name.compare(str))
+		if (!cfunction[i].name.compare(str))
 			return i;
 
 	return -1;

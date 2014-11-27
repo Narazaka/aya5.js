@@ -25,7 +25,7 @@ CWordMatch			function_wm;
 CBasis				basis;
 
 // 関数/システム関数/グローバル変数
-vector<CFunction>	function;
+vector<CFunction>	cfunction;
 CCallDepth			calldepth;
 CSystemFunction		sysfunction;
 CGlobalVariable		variable;

@@ -22,7 +22,7 @@
 #include "log.h"
 #include "wsex.h"
 
-extern vector<CFunction>	function;
+extern vector<CFunction>	cfunction;
 extern CCallDepth			calldepth;
 extern CSystemFunction		sysfunction;
 extern CGlobalVariable		variable;
@@ -430,7 +430,7 @@ CValue	CFunction::GetFormulaAnswer(CLocalVariable &lvar, CStatement &st)
 			break;
 		case F_TAG_FUNCPARAM:
 			if (ExecFunctionWithArgs(o_cell.ansv, it->index, st, lvar))
-				logger.Error(E_E, 33, function[st.cell[it->index[0]].index].name, dicfilename, st.linecount);
+				logger.Error(E_E, 33, cfunction[st.cell[it->index[0]].index].name, dicfilename, st.linecount);
 			break;
 		case F_TAG_SYSFUNCPARAM:
 			if (ExecSystemFunctionWithArgs(o_cell, it->index, st, lvar))
@@ -492,7 +492,7 @@ CValue	*CFunction::GetValuePtrForCalc(CCell &cell, CStatement &st, CLocalVariabl
 		CValue	arg(F_TAG_ARRAY, 0/*dmy*/);
 		CLocalVariable	t_lvar;
 		int	exitcode;
-		cell.ansv = function[cell.index].Execute(arg, t_lvar, exitcode);
+		cell.ansv = cfunction[cell.index].Execute(arg, t_lvar, exitcode);
 		return &(cell.ansv);
 	}
 	case F_TAG_VARIABLE:
@@ -530,7 +530,7 @@ void	CFunction::SolveEmbedCell(CCell &cell, CStatement &st, CLocalVariable &lvar
 		max_len   = variable.GetMacthedLongestNameLength(cell.v.s_value);
 		// 関数
 		int	t_len = 0;
-		for(vector<CFunction>::iterator it = function.begin(); it != function.end(); it++)
+		for(vector<CFunction>::iterator it = cfunction.begin(); it != cfunction.end(); it++)
 			if (!it->name.compare(cell.v.s_value.substr(0, it->namelen)))
 				if (t_len < it->namelen)
 					t_len = it->namelen;
@@ -821,7 +821,7 @@ char	CFunction::ExecFunctionWithArgs(CValue &answer, vector<int> &sid, CStatemen
 	// 実行
 	CLocalVariable	t_lvar;
 	int	exitcode;
-	answer = function[index].Execute(arg, t_lvar, exitcode);
+	answer = cfunction[index].Execute(arg, t_lvar, exitcode);
 
 	// フィードバック
 	CValue	*v_argv = &(t_lvar.GetArgvPtr()->v);

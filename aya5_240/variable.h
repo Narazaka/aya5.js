@@ -40,7 +40,7 @@ protected:
 									// 0/1=óLå¯/è¡ãéÇ≥ÇÍÇΩ
 
 public:
-	CVariable::CVariable(const wstring &n) : v()
+	CVariable(const wstring &n) : v()
 	{
 		name       = n;
 		delimiter  = VAR_DELIMITER;
@@ -48,7 +48,7 @@ public:
 		erased     = 0;
 	}
 
-	CVariable::CVariable(wchar_t *n) : v()
+	CVariable(wchar_t *n) : v()
 	{
 		name       = n;
 		delimiter  = VAR_DELIMITER;
@@ -56,7 +56,7 @@ public:
 		erased     = 0;
 	}
 
-	CVariable::CVariable(void) : v()
+	CVariable(void) : v()
 	{
 		name       = L"";
 		delimiter  = VAR_DELIMITER;

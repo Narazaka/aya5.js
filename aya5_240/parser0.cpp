@@ -23,7 +23,7 @@
 #include "wordmatch.h"
 
 extern CBasis				basis;
-extern vector<CFunction>	function;
+extern vector<CFunction>	cfunction;
 extern CGlobalVariable		variable;
 extern CLog					logger;
 
@@ -487,16 +487,16 @@ int	CParser0::MakeFunction(const wstring& name, int chtype, const wstring& dicfi
 	int	i = GetFunctionIndexFromName(name);
 	if(i != -1)
 		return -1;
-/*	for(vector<CFunction>::iterator it = function.begin(); it != function.end(); it++)
+/*	for(vector<CFunction>::iterator it = cfunction.begin(); it != cfunction.end(); it++)
 		if (!name.compare(it->name))
 			return -1;
 */
 
 	CFunction	addfunction(name, chtype, dicfilename);
-	function.push_back(addfunction);
-	function_wm.addWord(name, function.size() - 1);
+	cfunction.push_back(addfunction);
+	function_wm.addWord(name, cfunction.size() - 1);
 
-	return function.size() - 1;
+	return cfunction.size() - 1;
 }
 
 /* -----------------------------------------------------------------------
@@ -514,50 +514,50 @@ char	CParser0::StoreInternalStatement(int targetfunc, wstring &str, int& depth, 
 	if (!str.compare(L"{")) {
 		depth++;
 		CStatement	addstatement(ST_OPEN, linecount);
-		function[targetfunc].statement.push_back(addstatement);
+		cfunction[targetfunc].statement.push_back(addstatement);
 		return 1;
 	}
 	// }
 	else if (!str.compare(L"}")) {
 		depth--;
 		CStatement	addstatement(ST_CLOSE, linecount);
-		function[targetfunc].statement.push_back(addstatement);
+		cfunction[targetfunc].statement.push_back(addstatement);
 		return 1;
 	}
 	// others　elseへ書き換えてしまう
 	else if (!str.compare(L"others")) {
 		CStatement	addstatement(ST_ELSE, linecount);
-		function[targetfunc].statement.push_back(addstatement);
+		cfunction[targetfunc].statement.push_back(addstatement);
 		return 1;
 	}
 	// else
 	else if (!str.compare(L"else")) {
 		CStatement	addstatement(ST_ELSE, linecount);
-		function[targetfunc].statement.push_back(addstatement);
+		cfunction[targetfunc].statement.push_back(addstatement);
 		return 1;
 	}
 	// break
 	else if (!str.compare(L"break")) {
 		CStatement	addstatement(ST_BREAK, linecount);
-		function[targetfunc].statement.push_back(addstatement);
+		cfunction[targetfunc].statement.push_back(addstatement);
 		return 1;
 	}
 	// continue
 	else if (!str.compare(L"continue")) {
 		CStatement	addstatement(ST_CONTINUE, linecount);
-		function[targetfunc].statement.push_back(addstatement);
+		cfunction[targetfunc].statement.push_back(addstatement);
 		return 1;
 	}
 	// return
 	else if (!str.compare(L"return")) {
 		CStatement	addstatement(ST_RETURN, linecount);
-		function[targetfunc].statement.push_back(addstatement);
+		cfunction[targetfunc].statement.push_back(addstatement);
 		return 1;
 	}
 	// --
 	else if (!str.compare(L"--")) {
 		CStatement	addstatement(ST_COMBINE, linecount);
-		function[targetfunc].statement.push_back(addstatement);
+		cfunction[targetfunc].statement.push_back(addstatement);
 		return 1;
 	}
 
@@ -604,7 +604,7 @@ char	CParser0::StoreInternalStatement(int targetfunc, wstring &str, int& depth, 
 	}
 	// case　特殊な名前のローカル変数への代入に書き換えてしまう
 	else if (!st.compare(L"case")) {
-		str = PREFIX_CASE_VAR + function[targetfunc].name;
+		str = PREFIX_CASE_VAR + cfunction[targetfunc].name;
 		wstring	tmpstr;
 		ws_itoa(tmpstr, linecount, 10);
 		str += tmpstr;
@@ -651,7 +651,7 @@ char	CParser0::MakeStatement(int type, int targetfunc, wstring &str, const wstri
 			return 0;
 	}
 
-	function[targetfunc].statement.push_back(addstatement);
+	cfunction[targetfunc].statement.push_back(addstatement);
 	return 1;
 }
 
@@ -1041,7 +1041,7 @@ void	CParser0::StructFormulaCell(wstring &str, vector<CCell> &cells)
  */
 char	CParser0::AddSimpleIfBrace(void)
 {
-	for(vector<CFunction>::iterator it = function.begin(); it != function.end(); it++) {
+	for(vector<CFunction>::iterator it = cfunction.begin(); it != cfunction.end(); it++) {
 		int	beftype = ST_UNKNOWN;
 		for(vector<CStatement>::iterator it2 = it->statement.begin(); it2 != it->statement.end(); it2++) {
 			if (beftype == ST_IF ||
@@ -1076,7 +1076,7 @@ char	CParser0::SetCellType(void)
 {
 	int	errorflg = 0;
 
-	for(vector<CFunction>::iterator it = function.begin(); it != function.end(); it++)
+	for(vector<CFunction>::iterator it = cfunction.begin(); it != cfunction.end(); it++)
 		for(vector<CStatement>::iterator it2 = it->statement.begin(); it2 != it->statement.end(); it2++) {
 			// 数式以外は飛ばす
 			if (it2->type < ST_FORMULA)
@@ -1127,7 +1127,7 @@ char	CParser0::SetCellType1(CCell& scell, char emb, const wstring& dicfilename, 
 
 /*
 	int i = 0;
-	for(vector<CFunction>::iterator it = function.begin(); it != function.end(); it++, i++)
+	for(vector<CFunction>::iterator it = cfunction.begin(); it != cfunction.end(); it++, i++)
 		if (!scell.v.s_value.compare(it->name)) {
 			scell.v.SetType(F_TAG_USERFUNC);
 			scell.index     = i;
@@ -1285,7 +1285,7 @@ char	CParser0::ParseEmbeddedFactor(void)
 {
 	int	errcount = 0;
 
-	for(vector<CFunction>::iterator it = function.begin(); it != function.end(); it++)
+	for(vector<CFunction>::iterator it = cfunction.begin(); it != cfunction.end(); it++)
 		for(vector<CStatement>::iterator it2 = it->statement.begin(); it2 != it->statement.end(); it2++)
 		    errcount += ParseEmbeddedFactor1(*it2, it->dicfilename);
 
@@ -1381,7 +1381,7 @@ char	CParser0::ParseEmbeddedFactor1(CStatement& st, const wstring& dicfilename)
  */
 void	CParser0::ConvertPlainString(void)
 {
-	for(vector<CFunction>::iterator it = function.begin(); it != function.end(); it++)
+	for(vector<CFunction>::iterator it = cfunction.begin(); it != cfunction.end(); it++)
 		for(vector<CStatement>::iterator it2 = it->statement.begin(); it2 != it->statement.end(); it2++)
 		    ConvertPlainString1(*it2, it->dicfilename);
 }
@@ -1577,7 +1577,7 @@ char	CParser0::CheckDepthAndSerialize(void)
 	int	errcount = 0;
 
 	// 数式のカッコ検査
-	for(vector<CFunction>::iterator it = function.begin(); it != function.end(); it++)
+	for(vector<CFunction>::iterator it = cfunction.begin(); it != cfunction.end(); it++)
 		for(vector<CStatement>::iterator it2 = it->statement.begin(); it2 != it->statement.end(); it2++) {
 			if (it2->type < ST_FORMULA)
 				continue;
@@ -1589,7 +1589,7 @@ char	CParser0::CheckDepthAndSerialize(void)
 	errcount += MakeCompleteConvertionWhenToIf();
 
 	// 演算順序の決定
-	for(vector<CFunction>::iterator it = function.begin(); it != function.end(); it++)
+	for(vector<CFunction>::iterator it = cfunction.begin(); it != cfunction.end(); it++)
 		for(vector<CStatement>::iterator it2 = it->statement.begin(); it2 != it->statement.end(); it2++) {
 			if (it2->type < ST_FORMULA)
 				continue;
@@ -1611,7 +1611,7 @@ char	CParser0::MakeCompleteConvertionWhenToIf(void)
 {
 	int	errcount = 0;
 
-	for(vector<CFunction>::iterator it = function.begin(); it != function.end(); it++) {
+	for(vector<CFunction>::iterator it = cfunction.begin(); it != cfunction.end(); it++) {
 		vector<wstring>	caseary;
 		wstring	dmystr = L"";
 		caseary.push_back(dmystr);

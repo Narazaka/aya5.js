@@ -25,10 +25,10 @@ public:
 	vector<int>	index;				// 演算対象のCCell位置番号のリスト
 									// 演算子がF_TAG_FUNCPARAM/F_TAG_SYSFUNCPARAMの場合は、index[0]が関数を示します
 public:
-	CSerial::CSerial(int t) { tindex = t; }
+	CSerial(int t) { tindex = t; }
 
-	CSerial::CSerial(void) {}
-	CSerial::~CSerial(void) {}
+	CSerial(void) {}
+	~CSerial(void) {}
 };
 
 //----
@@ -45,13 +45,13 @@ public:
 	CValue	emb_ansv;				// 値（%[n]で参照される値を保持します）
 	CValue	order;					// 演算時に使用（配列の序数を一時的に保持します）
 public:
-	CCell::CCell(int t) : v(t, 0/*dmy*/), ansv(), emb_ansv(), order()
+	CCell(int t) : v(t, 0/*dmy*/), ansv(), emb_ansv(), order()
 	{
 		index = -1;
 		depth = -1;
 	}
 
-	CCell::CCell(void) : v(), ansv(), emb_ansv(), order()
+	CCell(void) : v(), ansv(), emb_ansv(), order()
 	{
 		index = -1;
 		depth = -1;

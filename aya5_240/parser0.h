@@ -26,14 +26,14 @@ public:
 	wstring	before;
 	wstring	after;
 public:
-	CDefine::CDefine(wstring &bef, wstring &aft)
+	CDefine(wstring &bef, wstring &aft)
 	{
 		before = bef;
 		after  = aft;
 	}
 
-	CDefine::CDefine(void) {}
-	CDefine::~CDefine(void) {}
+	CDefine(void) {}
+	~CDefine(void) {}
 };
 
 //----

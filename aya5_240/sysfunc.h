@@ -26,7 +26,7 @@
 #include "variable.h"
 #include "function.h"
 
-#include <boost/regex.hpp>	/* boost::regex‚ðŽg—p‚µ‚Ü‚· */
+#include <regex>
 #define	BOOST_REGEX_STATIC_LINK
 
 #define	I_PERF_DATA_SIZE			32768
@@ -296,7 +296,7 @@ protected:
 
 	CValue	RE_SPLIT_CORE(vector<CValueSub> &arg, wstring &d, int &l, const wstring &fncname);
 
-	void	StoreReResultDetails(boost::match_results<const wchar_t*> &result);
+	void	StoreReResultDetails(std::match_results<const wchar_t*> &result);
 	void	ClearReResultDetails(void);
 	void	AppendReResultDetail(const wstring &str, int pos, int len);
 	void	SetError(int code);

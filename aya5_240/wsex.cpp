@@ -14,9 +14,7 @@
 #  include <iostream>
 #  include <sstream>
 #  include <iomanip>
-#  include <boost/lexical_cast.hpp>
 using namespace std;
-using namespace boost;
 #endif
 #include "wsex.h"
 #include "ccct.h"

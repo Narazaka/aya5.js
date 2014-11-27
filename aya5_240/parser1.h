@@ -28,7 +28,7 @@ class	CParser1
 {
 public:
 	static char	CheckExecutionCode(void);
-	static char	CParser1::CheckExecutionCode1(CStatement& st, const wstring& dicfilename);
+	static char	CheckExecutionCode1(CStatement& st, const wstring& dicfilename);
 
 protected:
 	static char	CheckSubstSyntax(CStatement& st, const wstring& dicfilename);
