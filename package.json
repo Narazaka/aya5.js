@@ -3,7 +3,7 @@
 	"version": "0.0.1",
 	"description": "AYA5 on JavaScript",
 	"homepage": "",
-	"main": "aya5_240/aya5.js",
+	"main": "aya5.js",
 	"author": {
 		"name": "narazaka",
 		"url": "http://narazaka.net/"

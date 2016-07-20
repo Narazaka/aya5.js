@@ -15,6 +15,10 @@ Do not report bugs or something that is caused by aya5.js to umeici.
 Installation
 ---------------------------------------
 
+    npm install aya5.js
+
+or
+
     bower install aya5.js
 
 or download zip archive and get aya5.js
@@ -57,4 +61,4 @@ So use the wrapper module, [nativeshiori](https://github.com/Narazaka/nativeshio
 LICENSE
 --------------------------------
 
-(C) 2014 Narazaka : Licensed under [The BSD 3-Clause License](http://narazaka.net/license/BSD3?2014)
+(C) 2016 Narazaka : Licensed under [The BSD 3-Clause License](http://narazaka.net/license/BSD3?2016)
